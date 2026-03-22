@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { neon } from "@neondatabase/serverless";
+import { Resend } from "resend";
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
@@ -31,6 +33,44 @@ export async function GET(request) {
   });
 
   const user = await userRes.json();
+
+  const sql = neon(process.env.DATABASE_URL);
+
+  const existing = await sql`SELECT * FROM users WHERE email = ${user.email}`;
+
+  if (existing.length === 0) {
+    await sql`
+      INSERT INTO users (email, name, status, trial_start, expiry_date)
+      VALUES (${user.email}, ${user.name}, 'trial', NOW(), NOW() + INTERVAL '7 days')
+    `;
+  }
+
+  const dbUser = existing.length > 0 ? existing[0] : (await sql`SELECT * FROM users WHERE email = ${user.email}`)[0];
+
+  const now = new Date();
+  const expiry = new Date(dbUser.expiry_date);
+  const daysLeft = Math.ceil((expiry - now) / (1000 * 60 * 60 * 24));
+
+  if (now > expiry) {
+    await sql`UPDATE users SET status = 'expired' WHERE email = ${user.email}`;
+    return NextResponse.redirect(
+      "https://web-developer-kp.com/payment?software=erpbridge&email=" + encodeURIComponent(user.email)
+    );
+  }
+
+  if (dbUser.status === "active" && daysLeft <= 7) {
+    try {
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      await resend.emails.send({
+        from: "ERPBridge <no-reply@web-developer-kp.com>",
+        to: user.email,
+        subject: "ERPBridge — Renewal Reminder",
+        html: `<p>Dear ${user.name},</p><p>Your ERPBridge subscription expires in <strong>${daysLeft} day(s)</strong>.</p><p>Renew now at just ₹4,999/year: <a href="https://web-developer-kp.com/payment?software=erpbridge&email=${encodeURIComponent(user.email)}">Click here to renew</a></p><p>Team ERPBridge</p>`,
+      });
+    } catch (e) {
+      console.error("Resend error:", e);
+    }
+  }
 
   const payload = btoa(JSON.stringify({ email: user.email, name: user.name, picture: user.picture }));
 
