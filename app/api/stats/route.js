@@ -22,9 +22,26 @@ export async function GET() {
       ORDER BY month
     `;
 
+    const fmcgInvoices = await sql`SELECT COALESCE(COUNT(*), 0) as total FROM invoices`;
+    const fmcgQty = await sql`SELECT COALESCE(SUM(total_qty), 0) as total FROM invoices`;
+    const fmcgParties = await sql`SELECT COALESCE(COUNT(DISTINCT party), 0) as total FROM invoices`;
+
+    const fmcgChart = await sql`
+      SELECT EXTRACT(MONTH FROM date) as month, COUNT(*) as total
+      FROM invoices
+      GROUP BY EXTRACT(MONTH FROM date)
+      ORDER BY month
+    `;
+
     return NextResponse.json({
       stats: { sales, purchase, outstanding, profit },
       chart: chartResult.map((r) => ({ month: parseInt(r.month), total: parseFloat(r.total) })),
+      fmcg: {
+        invoices: parseInt(fmcgInvoices[0].total),
+        qty: parseInt(fmcgQty[0].total),
+        parties: parseInt(fmcgParties[0].total),
+      },
+      fmcgChart: fmcgChart.map((r) => ({ month: parseInt(r.month), total: parseInt(r.total) })),
     });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

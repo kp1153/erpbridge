@@ -5,6 +5,8 @@ export default function DashboardPage() {
   const [user, setUser] = useState(null);
   const [stats, setStats] = useState({ sales: 0, purchase: 0, outstanding: 0, profit: 0 });
   const [chartData, setChartData] = useState([]);
+  const [fmcg, setFmcg] = useState({ invoices: 0, qty: 0, parties: 0 });
+  const [fmcgChart, setFmcgChart] = useState([]);
 
   useEffect(() => {
     fetch("/api/auth/me")
@@ -16,11 +18,17 @@ export default function DashboardPage() {
       .then((d) => {
         setStats(d.stats);
         setChartData(d.chart);
+        setFmcg(d.fmcg || { invoices: 0, qty: 0, parties: 0 });
+        setFmcgChart(d.fmcgChart || []);
       });
   }, []);
 
-  const months = ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar"];
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const maxBar = chartData.length > 0 ? Math.max(...chartData.map((c) => c.total)) : 1;
+  const maxFmcgBar = fmcgChart.length > 0 ? Math.max(...fmcgChart.map((c) => c.total)) : 1;
+
+  const hasTally = stats.sales > 0 || stats.purchase > 0 || stats.outstanding > 0;
+  const hasFmcg = fmcg.invoices > 0;
 
   return (
     <div style={{ fontFamily: "'DM Sans', sans-serif" }}>
@@ -29,7 +37,9 @@ export default function DashboardPage() {
         .dash-header { margin-bottom: 32px; }
         .dash-greeting { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: #f0ede8; margin-bottom: 4px; }
         .dash-sub { font-size: 14px; color: #706e6a; font-weight: 300; }
+        .section-label { font-size: 11px; color: #f5c842; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px; margin-top: 28px; font-weight: 400; }
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+        .stats-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
         .stat-box { background: #13131a; border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 24px; transition: border-color 0.2s; }
         .stat-box:hover { border-color: rgba(245,200,66,0.2); }
         .stat-label { font-size: 11px; color: #706e6a; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
@@ -39,6 +49,7 @@ export default function DashboardPage() {
         .chart-bars { display: flex; align-items: flex-end; gap: 8px; height: 160px; }
         .chart-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; height: 100%; justify-content: flex-end; }
         .chart-bar { width: 100%; background: linear-gradient(180deg, #f5c842, rgba(245,200,66,0.2)); border-radius: 3px 3px 0 0; transition: height 0.4s ease; }
+        .chart-bar.blue { background: linear-gradient(180deg, #4e9ef5, rgba(78,158,245,0.2)); }
         .chart-month { font-size: 10px; color: #706e6a; letter-spacing: 0.5px; }
         .bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
         .bottom-box { background: #13131a; border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 28px; }
@@ -50,8 +61,10 @@ export default function DashboardPage() {
         .report-name { font-size: 14px; color: #f0ede8; font-weight: 400; }
         .report-link { font-size: 12px; color: #f5c842; cursor: pointer; }
         .report-link:hover { text-decoration: underline; }
+        .empty-state { background: #13131a; border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 48px; text-align: center; color: #706e6a; font-size: 14px; font-weight: 300; margin-bottom: 28px; }
         @media (max-width: 768px) {
           .stats-grid { grid-template-columns: 1fr 1fr; }
+          .stats-grid-3 { grid-template-columns: 1fr 1fr; }
           .bottom-grid { grid-template-columns: 1fr; }
         }
       `}</style>
@@ -63,40 +76,83 @@ export default function DashboardPage() {
         <div className="dash-sub">Here is your business overview for today.</div>
       </div>
 
-      <div className="stats-grid">
-        <div className="stat-box">
-          <div className="stat-label">Total Sales</div>
-          <div className="stat-value" style={{ color: "#f5c842" }}>Rs. {(stats.sales / 100000).toFixed(1)}L</div>
-        </div>
-        <div className="stat-box">
-          <div className="stat-label">Total Purchase</div>
-          <div className="stat-value" style={{ color: "#f0ede8" }}>Rs. {(stats.purchase / 100000).toFixed(1)}L</div>
-        </div>
-        <div className="stat-box">
-          <div className="stat-label">Outstanding</div>
-          <div className="stat-value" style={{ color: "#ff6b6b" }}>Rs. {(stats.outstanding / 100000).toFixed(1)}L</div>
-        </div>
-        <div className="stat-box">
-          <div className="stat-label">Net Profit</div>
-          <div className="stat-value" style={{ color: "#4ecb71" }}>Rs. {(stats.profit / 100000).toFixed(1)}L</div>
-        </div>
-      </div>
+      <div className="section-label">Tally / ERP Data</div>
+      {hasTally ? (
+        <>
+          <div className="stats-grid">
+            <div className="stat-box">
+              <div className="stat-label">Total Sales</div>
+              <div className="stat-value" style={{ color: "#f5c842" }}>Rs. {(stats.sales / 100000).toFixed(1)}L</div>
+            </div>
+            <div className="stat-box">
+              <div className="stat-label">Total Purchase</div>
+              <div className="stat-value" style={{ color: "#f0ede8" }}>Rs. {(stats.purchase / 100000).toFixed(1)}L</div>
+            </div>
+            <div className="stat-box">
+              <div className="stat-label">Outstanding</div>
+              <div className="stat-value" style={{ color: "#ff6b6b" }}>Rs. {(stats.outstanding / 100000).toFixed(1)}L</div>
+            </div>
+            <div className="stat-box">
+              <div className="stat-label">Net Profit</div>
+              <div className="stat-value" style={{ color: "#4ecb71" }}>Rs. {(stats.profit / 100000).toFixed(1)}L</div>
+            </div>
+          </div>
+          <div className="chart-box">
+            <div className="chart-title">Monthly Sales Overview</div>
+            <div className="chart-bars">
+              {months.map((m, i) => {
+                const found = chartData.find((c) => c.month === i + 1);
+                const h = found ? (found.total / maxBar) * 100 : 4;
+                return (
+                  <div key={m} className="chart-col">
+                    <div className="chart-bar" style={{ height: `${h}%` }}></div>
+                    <div className="chart-month">{m}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="empty-state">No Tally data uploaded yet. Upload a file to see stats.</div>
+      )}
 
-      <div className="chart-box">
-        <div className="chart-title">Monthly Sales Overview</div>
-        <div className="chart-bars">
-          {months.map((m, i) => {
-            const found = chartData.find((c) => c.month === i + 4 || c.month === i - 8);
-            const h = found ? (found.total / maxBar) * 100 : 4;
-            return (
-              <div key={m} className="chart-col">
-                <div className="chart-bar" style={{ height: `${h}%` }}></div>
-                <div className="chart-month">{m}</div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      <div className="section-label">FMCG Sales Data</div>
+      {hasFmcg ? (
+        <>
+          <div className="stats-grid-3">
+            <div className="stat-box">
+              <div className="stat-label">Total Invoices</div>
+              <div className="stat-value" style={{ color: "#f5c842" }}>{fmcg.invoices.toLocaleString("en-IN")}</div>
+            </div>
+            <div className="stat-box">
+              <div className="stat-label">Total Qty (Boxes)</div>
+              <div className="stat-value" style={{ color: "#f0ede8" }}>{fmcg.qty.toLocaleString("en-IN")}</div>
+            </div>
+            <div className="stat-box">
+              <div className="stat-label">Active Parties</div>
+              <div className="stat-value" style={{ color: "#4ecb71" }}>{fmcg.parties.toLocaleString("en-IN")}</div>
+            </div>
+          </div>
+          <div className="chart-box">
+            <div className="chart-title">Monthly Invoice Volume</div>
+            <div className="chart-bars">
+              {months.map((m, i) => {
+                const found = fmcgChart.find((c) => c.month === i + 1);
+                const h = found ? (found.total / maxFmcgBar) * 100 : 4;
+                return (
+                  <div key={m} className="chart-col">
+                    <div className="chart-bar blue" style={{ height: `${h}%` }}></div>
+                    <div className="chart-month">{m}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="empty-state">No FMCG data uploaded yet. Upload FMCG Excel to see stats.</div>
+      )}
 
       <div className="bottom-grid">
         <div className="bottom-box">
@@ -104,7 +160,7 @@ export default function DashboardPage() {
           <div className="upload-hint" onClick={() => window.location.href = "/dashboard/upload"}>
             <div style={{ fontSize: "28px", marginBottom: "12px" }}>[+]</div>
             <div>Drop your CSV or Excel file here</div>
-            <div style={{ fontSize: "12px", marginTop: "6px" }}>Tally, Busy, Marg supported</div>
+            <div style={{ fontSize: "12px", marginTop: "6px" }}>Tally, Busy, Marg, FMCG supported</div>
           </div>
         </div>
         <div className="bottom-box">
