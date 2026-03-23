@@ -39,21 +39,15 @@ export default function ReportPage() {
     purchase: "Purchase Report",
     ledger: "Party Ledger",
     pnl: "P&L Statement",
+    "fmcg-party": "Party-wise Sales",
+    "fmcg-product": "Product-wise Sales",
+    "fmcg-so": "SO Performance",
+    "fmcg-asm": "ASM Performance",
+    "fmcg-city": "City-wise Sales",
   };
-
-  function handleFilter() {
-    fetchData(from, to);
-  }
-
-  function handleReset() {
-    setFrom("");
-    setTo("");
-    fetchData("", "");
-  }
 
   function handleExport() {
     let exportData = [];
-
     if (type === "sales" || type === "purchase") {
       exportData = data.map((row) => ({
         Party: row.party || "Unknown",
@@ -73,8 +67,44 @@ export default function ReportPage() {
         Type: row.type,
         Total: parseFloat(row.total),
       }));
+    } else if (type === "fmcg-party") {
+      exportData = data.map((row) => ({
+        Party: row.party,
+        City: row.city,
+        State: row.state,
+        Invoices: row.invoices,
+        "Total Qty": row.total_qty,
+      }));
+    } else if (type === "fmcg-product") {
+      exportData = data.map((row) => ({
+        Product: row.product,
+        "Total Qty": row.total_qty,
+        Invoices: row.invoices,
+      }));
+    } else if (type === "fmcg-so") {
+      exportData = data.map((row) => ({
+        "Sales Officer": row.so,
+        Invoices: row.invoices,
+        "Total Qty": row.total_qty,
+        Parties: row.parties,
+      }));
+    } else if (type === "fmcg-asm") {
+      exportData = data.map((row) => ({
+        ASM: row.asm,
+        Invoices: row.invoices,
+        "Total Qty": row.total_qty,
+        Parties: row.parties,
+        SOs: row.sos,
+      }));
+    } else if (type === "fmcg-city") {
+      exportData = data.map((row) => ({
+        City: row.city,
+        State: row.state,
+        Invoices: row.invoices,
+        "Total Qty": row.total_qty,
+        Parties: row.parties,
+      }));
     }
-
     const worksheet = XLSX.utils.json_to_sheet(exportData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, titles[type] || type);
@@ -141,8 +171,8 @@ export default function ReportPage() {
           <div className="filter-label">To</div>
           <input type="date" className="filter-input" value={to} onChange={(e) => setTo(e.target.value)} />
         </div>
-        <button className="filter-btn" onClick={handleFilter}>Apply</button>
-        <button className="reset-btn" onClick={handleReset}>Reset</button>
+        <button className="filter-btn" onClick={() => fetchData(from, to)}>Apply</button>
+        <button className="reset-btn" onClick={() => { setFrom(""); setTo(""); fetchData("", ""); }}>Reset</button>
       </div>
 
       {type === "pnl" && !loading && data.length > 0 && (() => {
@@ -193,12 +223,49 @@ export default function ReportPage() {
                     <th>Purchase</th>
                     <th>Balance</th>
                   </>
-                ) : (
+                ) : type === "pnl" ? (
                   <>
                     <th>Type</th>
                     <th>Total</th>
                   </>
-                )}
+                ) : type === "fmcg-party" ? (
+                  <>
+                    <th>Party</th>
+                    <th>City</th>
+                    <th>State</th>
+                    <th>Invoices</th>
+                    <th>Total Qty</th>
+                  </>
+                ) : type === "fmcg-product" ? (
+                  <>
+                    <th>Product</th>
+                    <th>Total Qty</th>
+                    <th>Invoices</th>
+                  </>
+                ) : type === "fmcg-so" ? (
+                  <>
+                    <th>Sales Officer</th>
+                    <th>Invoices</th>
+                    <th>Total Qty</th>
+                    <th>Parties</th>
+                  </>
+                ) : type === "fmcg-asm" ? (
+                  <>
+                    <th>ASM</th>
+                    <th>Invoices</th>
+                    <th>Total Qty</th>
+                    <th>Parties</th>
+                    <th>SOs</th>
+                  </>
+                ) : type === "fmcg-city" ? (
+                  <>
+                    <th>City</th>
+                    <th>State</th>
+                    <th>Invoices</th>
+                    <th>Total Qty</th>
+                    <th>Parties</th>
+                  </>
+                ) : null}
               </tr>
             </thead>
             <tbody>
@@ -218,12 +285,49 @@ export default function ReportPage() {
                       <td><span className="amount red">Rs. {parseFloat(row.purchase).toLocaleString("en-IN")}</span></td>
                       <td><span className={`amount ${parseFloat(row.balance) >= 0 ? "green" : "red"}`}>Rs. {parseFloat(row.balance).toLocaleString("en-IN")}</span></td>
                     </>
-                  ) : (
+                  ) : type === "pnl" ? (
                     <>
                       <td style={{ textTransform: "capitalize" }}>{row.type}</td>
                       <td><span className="amount">Rs. {parseFloat(row.total).toLocaleString("en-IN")}</span></td>
                     </>
-                  )}
+                  ) : type === "fmcg-party" ? (
+                    <>
+                      <td>{row.party}</td>
+                      <td>{row.city}</td>
+                      <td>{row.state}</td>
+                      <td>{row.invoices}</td>
+                      <td><span className="amount">{parseInt(row.total_qty).toLocaleString("en-IN")}</span></td>
+                    </>
+                  ) : type === "fmcg-product" ? (
+                    <>
+                      <td>{row.product}</td>
+                      <td><span className="amount">{parseInt(row.total_qty).toLocaleString("en-IN")}</span></td>
+                      <td>{row.invoices}</td>
+                    </>
+                  ) : type === "fmcg-so" ? (
+                    <>
+                      <td>{row.so}</td>
+                      <td>{row.invoices}</td>
+                      <td><span className="amount">{parseInt(row.total_qty).toLocaleString("en-IN")}</span></td>
+                      <td>{row.parties}</td>
+                    </>
+                  ) : type === "fmcg-asm" ? (
+                    <>
+                      <td>{row.asm}</td>
+                      <td>{row.invoices}</td>
+                      <td><span className="amount">{parseInt(row.total_qty).toLocaleString("en-IN")}</span></td>
+                      <td>{row.parties}</td>
+                      <td>{row.sos}</td>
+                    </>
+                  ) : type === "fmcg-city" ? (
+                    <>
+                      <td>{row.city}</td>
+                      <td>{row.state}</td>
+                      <td>{row.invoices}</td>
+                      <td><span className="amount">{parseInt(row.total_qty).toLocaleString("en-IN")}</span></td>
+                      <td>{row.parties}</td>
+                    </>
+                  ) : null}
                 </tr>
               ))}
             </tbody>

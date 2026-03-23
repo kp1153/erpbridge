@@ -47,6 +47,74 @@ export async function GET(request, { params }) {
         ${to ? sql`AND date <= ${to}` : sql``}
         GROUP BY type
       `;
+    } else if (type === "fmcg-party") {
+      data = await sql`
+        SELECT party,
+               city,
+               state,
+               COUNT(*) as invoices,
+               SUM(total_qty) as total_qty
+        FROM invoices
+        WHERE 1=1
+        ${from ? sql`AND date >= ${from}` : sql``}
+        ${to ? sql`AND date <= ${to}` : sql``}
+        GROUP BY party, city, state
+        ORDER BY total_qty DESC
+      `;
+    } else if (type === "fmcg-product") {
+      data = await sql`
+        SELECT ii.product,
+               SUM(ii.qty) as total_qty,
+               COUNT(DISTINCT i.id) as invoices
+        FROM invoice_items ii
+        JOIN invoices i ON ii.invoice_id = i.id
+        WHERE 1=1
+        ${from ? sql`AND i.date >= ${from}` : sql``}
+        ${to ? sql`AND i.date <= ${to}` : sql``}
+        GROUP BY ii.product
+        ORDER BY total_qty DESC
+      `;
+    } else if (type === "fmcg-so") {
+      data = await sql`
+        SELECT so,
+               COUNT(*) as invoices,
+               SUM(total_qty) as total_qty,
+               COUNT(DISTINCT party) as parties
+        FROM invoices
+        WHERE 1=1
+        ${from ? sql`AND date >= ${from}` : sql``}
+        ${to ? sql`AND date <= ${to}` : sql``}
+        GROUP BY so
+        ORDER BY total_qty DESC
+      `;
+    } else if (type === "fmcg-asm") {
+      data = await sql`
+        SELECT asm,
+               COUNT(*) as invoices,
+               SUM(total_qty) as total_qty,
+               COUNT(DISTINCT party) as parties,
+               COUNT(DISTINCT so) as sos
+        FROM invoices
+        WHERE 1=1
+        ${from ? sql`AND date >= ${from}` : sql``}
+        ${to ? sql`AND date <= ${to}` : sql``}
+        GROUP BY asm
+        ORDER BY total_qty DESC
+      `;
+    } else if (type === "fmcg-city") {
+      data = await sql`
+        SELECT city,
+               state,
+               COUNT(*) as invoices,
+               SUM(total_qty) as total_qty,
+               COUNT(DISTINCT party) as parties
+        FROM invoices
+        WHERE 1=1
+        ${from ? sql`AND date >= ${from}` : sql``}
+        ${to ? sql`AND date <= ${to}` : sql``}
+        GROUP BY city, state
+        ORDER BY total_qty DESC
+      `;
     }
 
     return NextResponse.json({ data });
