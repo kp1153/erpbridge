@@ -5,6 +5,7 @@ export default function SettingsPage() {
   const [business, setBusiness] = useState("");
   const [erp, setErp] = useState("");
   const [status, setStatus] = useState("");
+  const [clearing, setClearing] = useState(false);
 
   useEffect(() => {
     fetch("/api/settings")
@@ -29,6 +30,16 @@ export default function SettingsPage() {
     setTimeout(() => setStatus(""), 3000);
   }
 
+  async function handleClear() {
+    if (!confirm("Are you sure? This will delete all uploaded transaction data permanently.")) return;
+    setClearing(true);
+    const res = await fetch("/api/settings", { method: "DELETE" });
+    const data = await res.json();
+    setStatus(data.message || "Cleared");
+    setClearing(false);
+    setTimeout(() => setStatus(""), 3000);
+  }
+
   return (
     <div style={{ fontFamily: "'DM Sans', sans-serif" }}>
       <style>{`
@@ -44,6 +55,12 @@ export default function SettingsPage() {
         .field-select:focus { border-color: rgba(245,200,66,0.4); }
         .save-btn { background: #f5c842; color: #0a0a0f; border: none; padding: 12px 32px; border-radius: 6px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
         .save-btn:hover { background: #ffd966; transform: translateY(-1px); }
+        .danger-box { background: #13131a; border: 1px solid rgba(255,107,107,0.2); border-radius: 10px; padding: 36px; max-width: 520px; margin-top: 24px; }
+        .danger-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: #ff6b6b; margin-bottom: 8px; }
+        .danger-sub { font-size: 13px; color: #706e6a; font-weight: 300; margin-bottom: 24px; }
+        .clear-btn { background: transparent; color: #ff6b6b; border: 1px solid rgba(255,107,107,0.4); padding: 12px 32px; border-radius: 6px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+        .clear-btn:hover { background: rgba(255,107,107,0.08); border-color: #ff6b6b; }
+        .clear-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .status-msg { margin-top: 16px; font-size: 13px; color: #4ecb71; font-weight: 300; }
       `}</style>
 
@@ -74,6 +91,14 @@ export default function SettingsPage() {
         </div>
         <button className="save-btn" onClick={handleSave}>Save Settings</button>
         {status && <div className="status-msg">{status}</div>}
+      </div>
+
+      <div className="danger-box">
+        <div className="danger-title">Danger Zone</div>
+        <div className="danger-sub">This will permanently delete all uploaded transaction data. This action cannot be undone.</div>
+        <button className="clear-btn" onClick={handleClear} disabled={clearing}>
+          {clearing ? "Clearing..." : "Clear All Data"}
+        </button>
       </div>
     </div>
   );

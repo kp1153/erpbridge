@@ -12,8 +12,15 @@ export default function HomePage() {
   }, []);
 
   return (
-    <main style={{ fontFamily: "'Georgia', serif", background: "#0a0a0f", color: "#f0ede8", minHeight: "100vh", overflowX: "hidden" }}>
-
+    <main
+      style={{
+        fontFamily: "'Georgia', serif",
+        background: "#0a0a0f",
+        color: "#f0ede8",
+        minHeight: "100vh",
+        overflowX: "hidden",
+      }}
+    >
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -87,8 +94,12 @@ export default function HomePage() {
       `}</style>
 
       <nav className={`nav ${scrolled ? "scrolled" : ""}`}>
-        <div className="logo">ERP<span>Bridge</span></div>
-        <Link href="/login" className="nav-btn">Start Free Trial</Link>
+        <div className="logo">
+          ERP<span>Bridge</span>
+        </div>
+        <Link href="/login" className="nav-btn">
+          Start Free Trial
+        </Link>
       </nav>
 
       <section className="hero">
@@ -96,47 +107,26 @@ export default function HomePage() {
           <div>
             <div className="hero-tag">Business Intelligence SaaS</div>
             <h1 className="hero-title">
-              Your ERP Data,<br />
+              Your ERP Data,
+              <br />
               <em>Finally Intelligent</em>
             </h1>
             <p className="hero-sub">
-              Upload data from Tally, Busy, or Marg. Get instant Sales, Purchase, P&amp;L and Party Ledger reports, all in one place.
+              Upload data from Tally, Busy, or Marg. Get instant Sales,
+              Purchase, P&amp;L and Party Ledger reports, all in one place.
             </p>
             <div className="hero-actions">
-              <Link href="/login" className="btn-primary">Start Free - 7 Days</Link>
-              <Link href="/dashboard" className="btn-ghost">View Dashboard</Link>
+              <Link href="/login" className="btn-primary">
+                Start Free - 7 Days
+              </Link>
+              <Link href="/dashboard" className="btn-ghost">
+                View Dashboard
+              </Link>
             </div>
-            <p className="price-tag">Free for 7 days. Then <strong>Rs. 11,999/year</strong>. Renewal at <strong>Rs. 4,999/year</strong>.</p>
-          </div>
-          <div className="dashboard-mock">
-            <div className="mock-bar">
-              <div className="mock-dot" style={{background:"#ff5f57"}}></div>
-              <div className="mock-dot" style={{background:"#febc2e"}}></div>
-              <div className="mock-dot" style={{background:"#28c840"}}></div>
-            </div>
-            <div className="mock-grid">
-              <div className="mock-card">
-                <div className="mock-label">Total Sales</div>
-                <div className="mock-value gold">Rs. 48.2L</div>
-              </div>
-              <div className="mock-card">
-                <div className="mock-label">Outstanding</div>
-                <div className="mock-value">Rs. 6.8L</div>
-              </div>
-              <div className="mock-card">
-                <div className="mock-label">Purchase</div>
-                <div className="mock-value">Rs. 31.5L</div>
-              </div>
-              <div className="mock-card">
-                <div className="mock-label">Net Profit</div>
-                <div className="mock-value gold">Rs. 16.7L</div>
-              </div>
-            </div>
-            <div className="mock-chart">
-              {[40,65,45,80,60,90,55,75,85,70,95,88].map((h,i) => (
-                <div key={i} className="bar" style={{height:`${h}%`}}></div>
-              ))}
-            </div>
+            <p className="price-tag">
+              Free for 7 days. Then <strong>Rs. 11,999/year</strong>. Renewal at{" "}
+              <strong>Rs. 4,999/year</strong>.
+            </p>
           </div>
         </div>
       </section>
@@ -145,16 +135,47 @@ export default function HomePage() {
 
       <div className="section">
         <div className="section-tag">Why ERPBridge</div>
-        <h2 className="section-title">What Tally Cannot Show,<br />We Do</h2>
-        <p className="section-sub">Your ERP handles data entry. ERPBridge turns that data into business intelligence.</p>
+        <h2 className="section-title">
+          What Tally Cannot Show,
+          <br />
+          We Do
+        </h2>
+        <p className="section-sub">
+          Your ERP handles data entry. ERPBridge turns that data into business
+          intelligence.
+        </p>
         <div className="features-grid">
           {[
-            { icon: "[+]", title: "Real-time Reports", desc: "Sales, Purchase, P&L, Party Ledger - all live. No manual calculations, no waiting." },
-            { icon: "[F]", title: "Any ERP, Any File", desc: "Tally, Busy, Marg, Zoho - upload any CSV or Excel file. Ready in 2 minutes." },
-            { icon: "[^]", title: "Visual Analytics", desc: "Charts and graphs that make trends obvious at a glance. No spreadsheet skills needed." },
-            { icon: "[S]", title: "Secure and Private", desc: "Your business data stays yours. Encrypted storage, secure login via Google." },
-            { icon: "[C]", title: "Works Everywhere", desc: "Access your dashboard from any device - laptop, phone, or tablet." },
-            { icon: "[*]", title: "Instant Setup", desc: "No installation. No IT team needed. Upload a file and you are live." },
+            {
+              icon: "[+]",
+              title: "Real-time Reports",
+              desc: "Sales, Purchase, P&L, Party Ledger - all live. No manual calculations, no waiting.",
+            },
+            {
+              icon: "[F]",
+              title: "Any ERP, Any File",
+              desc: "Tally, Busy, Marg, Zoho - upload any CSV or Excel file. Ready in 2 minutes.",
+            },
+            {
+              icon: "[^]",
+              title: "Visual Analytics",
+              desc: "Charts and graphs that make trends obvious at a glance. No spreadsheet skills needed.",
+            },
+            {
+              icon: "[S]",
+              title: "Secure and Private",
+              desc: "Your business data stays yours. Encrypted storage, secure login via Google.",
+            },
+            {
+              icon: "[C]",
+              title: "Works Everywhere",
+              desc: "Access your dashboard from any device - laptop, phone, or tablet.",
+            },
+            {
+              icon: "[*]",
+              title: "Instant Setup",
+              desc: "No installation. No IT team needed. Upload a file and you are live.",
+            },
           ].map((f) => (
             <div key={f.title} className="feature">
               <div className="feature-icon">{f.icon}</div>
@@ -170,10 +191,23 @@ export default function HomePage() {
       <div className="section">
         <div className="section-tag">Compatibility</div>
         <h2 className="section-title">Works With Your ERP</h2>
-        <p className="section-sub">Already using an ERP? ERPBridge connects to it without any integration or IT work.</p>
+        <p className="section-sub">
+          Already using an ERP? ERPBridge connects to it without any integration
+          or IT work.
+        </p>
         <div className="erp-row">
-          {["Tally Prime", "Tally ERP 9", "Busy Accounting", "Marg ERP", "Zoho Books", "Microsoft Excel", "CSV Export"].map((e) => (
-            <div key={e} className="erp-chip">{e}</div>
+          {[
+            "Tally Prime",
+            "Tally ERP 9",
+            "Busy Accounting",
+            "Marg ERP",
+            "Zoho Books",
+            "Microsoft Excel",
+            "CSV Export",
+          ].map((e) => (
+            <div key={e} className="erp-chip">
+              {e}
+            </div>
           ))}
         </div>
       </div>
@@ -188,7 +222,10 @@ export default function HomePage() {
             <div className="pricing-amount">Rs. 11,999</div>
             <div className="pricing-period">per year - first time</div>
             <div className="pricing-renewal">Renewal: Rs. 4,999/year</div>
-            <div className="compare">Magenta BI charges <strong>Rs. 36,000/year</strong>. We charge <strong>Rs. 11,999</strong>.</div>
+            <div className="compare">
+              Magenta BI charges <strong>Rs. 36,000/year</strong>. We charge{" "}
+              <strong>Rs. 11,999</strong>.
+            </div>
           </div>
           <div>
             <ul className="pricing-features">
@@ -199,16 +236,25 @@ export default function HomePage() {
               <li>Secure Google login</li>
               <li>Access from any device</li>
             </ul>
-            <Link href="/login" className="btn-primary" style={{marginTop: "28px", display: "inline-block"}}>Start Free Trial</Link>
+            <Link
+              href="/login"
+              className="btn-primary"
+              style={{ marginTop: "28px", display: "inline-block" }}
+            >
+              Start Free Trial
+            </Link>
           </div>
         </div>
       </div>
 
       <footer className="footer">
-        <div className="footer-logo">ERP<span>Bridge</span></div>
-        <div className="footer-text">ERPBridge - Business Intelligence for Indian Businesses</div>
+        <div className="footer-logo">
+          ERP<span>Bridge</span>
+        </div>
+        <div className="footer-text">
+          ERPBridge - Business Intelligence for Indian Businesses
+        </div>
       </footer>
-
     </main>
   );
 }

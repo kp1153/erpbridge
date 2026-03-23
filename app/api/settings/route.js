@@ -47,3 +47,18 @@ export async function POST(req) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
+export async function DELETE() {
+  try {
+    const cookieStore = await cookies();
+    const session = cookieStore.get("session");
+    if (!session) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+
+    const sql = neon(process.env.DATABASE_URL);
+    await sql`DELETE FROM transactions`;
+
+    return NextResponse.json({ message: "All data cleared successfully" });
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
