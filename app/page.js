@@ -34,7 +34,7 @@ export default function HomePage() {
         .hero { min-height: 100vh; display: flex; align-items: center; padding: 120px 48px 80px; position: relative; overflow: hidden; }
         .hero::before { content: ''; position: absolute; top: -200px; right: -200px; width: 700px; height: 700px; background: radial-gradient(circle, rgba(245,200,66,0.08) 0%, transparent 70%); pointer-events: none; }
         .hero::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(245,200,66,0.3), transparent); }
-        .hero-inner { max-width: 1200px; margin: 0 auto; width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+        .hero-inner { max-width: 720px; margin: 0 auto; width: 100%; }
         .hero-tag { display: inline-block; background: rgba(245,200,66,0.1); border: 1px solid rgba(245,200,66,0.3); color: #f5c842; padding: 6px 16px; border-radius: 2px; font-family: 'DM Sans', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 28px; }
         .hero-title { font-family: 'Playfair Display', serif; font-size: clamp(42px, 5vw, 68px); font-weight: 900; line-height: 1.1; margin-bottom: 24px; letter-spacing: -1px; }
         .hero-title em { font-style: italic; color: #f5c842; }
@@ -46,16 +46,6 @@ export default function HomePage() {
         .btn-ghost:hover { border-color: rgba(245,200,66,0.4); color: #f5c842; }
         .price-tag { font-family: 'DM Sans', sans-serif; font-size: 13px; color: #706e6a; margin-top: 16px; }
         .price-tag strong { color: #f0ede8; }
-        .dashboard-mock { background: #13131a; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 20px; box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(245,200,66,0.05); }
-        .mock-bar { display: flex; gap: 6px; margin-bottom: 16px; }
-        .mock-dot { width: 10px; height: 10px; border-radius: 50%; }
-        .mock-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        .mock-card { background: #1a1a24; border-radius: 8px; padding: 14px; border: 1px solid rgba(255,255,255,0.05); }
-        .mock-label { font-family: 'DM Sans', sans-serif; font-size: 10px; color: #706e6a; margin-bottom: 4px; letter-spacing: 0.5px; text-transform: uppercase; }
-        .mock-value { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: #f0ede8; }
-        .mock-value.gold { color: #f5c842; }
-        .mock-chart { background: #1a1a24; border-radius: 8px; padding: 14px; border: 1px solid rgba(255,255,255,0.05); height: 90px; display: flex; align-items: flex-end; gap: 6px; overflow: hidden; }
-        .bar { background: linear-gradient(180deg, #f5c842, rgba(245,200,66,0.3)); border-radius: 3px 3px 0 0; flex: 1; }
         .section { padding: 100px 48px; max-width: 1200px; margin: 0 auto; }
         .section-tag { font-family: 'DM Sans', sans-serif; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #f5c842; margin-bottom: 16px; }
         .section-title { font-family: 'Playfair Display', serif; font-size: clamp(32px, 4vw, 52px); font-weight: 700; line-height: 1.15; margin-bottom: 16px; }
@@ -83,7 +73,6 @@ export default function HomePage() {
         .footer-text { font-family: 'DM Sans', sans-serif; font-size: 13px; color: #4a4846; }
         .divider { width: 100%; height: 1px; background: linear-gradient(90deg, transparent, rgba(245,200,66,0.15), transparent); }
         @media (max-width: 768px) {
-          .hero-inner { grid-template-columns: 1fr; gap: 48px; }
           .features-grid { grid-template-columns: 1fr; }
           .pricing-box { flex-direction: column; padding: 40px; }
           .nav { padding: 20px 24px; }
@@ -94,40 +83,28 @@ export default function HomePage() {
       `}</style>
 
       <nav className={`nav ${scrolled ? "scrolled" : ""}`}>
-        <div className="logo">
-          ERP<span>Bridge</span>
-        </div>
-        <Link href="/login" className="nav-btn">
-          Start Free Trial
-        </Link>
+        <div className="logo">ERP<span>Bridge</span></div>
+        <Link href="/login" className="nav-btn">Start Free Trial</Link>
       </nav>
 
       <section className="hero">
         <div className="hero-inner">
-          <div>
-            <div className="hero-tag">Business Intelligence SaaS</div>
-            <h1 className="hero-title">
-              Your ERP Data,
-              <br />
-              <em>Finally Intelligent</em>
-            </h1>
-            <p className="hero-sub">
-              Upload data from Tally, Busy, or Marg. Get instant Sales,
-              Purchase, P&amp;L and Party Ledger reports, all in one place.
-            </p>
-            <div className="hero-actions">
-              <Link href="/login" className="btn-primary">
-                Start Free - 7 Days
-              </Link>
-              <Link href="/dashboard" className="btn-ghost">
-                View Dashboard
-              </Link>
-            </div>
-            <p className="price-tag">
-              Free for 7 days. Then <strong>Rs. 11,999/year</strong>. Renewal at{" "}
-              <strong>Rs. 4,999/year</strong>.
-            </p>
+          <div className="hero-tag">Business Intelligence SaaS</div>
+          <h1 className="hero-title">
+            Your ERP Data,<br />
+            <em>Finally Intelligent</em>
+          </h1>
+          <p className="hero-sub">
+            Upload data from Tally, Busy, or Marg. Get instant Sales,
+            Purchase, P&amp;L and Party Ledger reports, all in one place.
+          </p>
+          <div className="hero-actions">
+            <Link href="/login" className="btn-primary">Start Free - 7 Days</Link>
+            <Link href="/dashboard" className="btn-ghost">View Dashboard</Link>
           </div>
+          <p className="price-tag">
+            Free for 7 days. Then <strong>Rs. 11,999/year</strong>. Renewal at <strong>Rs. 4,999/year</strong>.
+          </p>
         </div>
       </section>
 
@@ -135,47 +112,16 @@ export default function HomePage() {
 
       <div className="section">
         <div className="section-tag">Why ERPBridge</div>
-        <h2 className="section-title">
-          What Tally Cannot Show,
-          <br />
-          We Do
-        </h2>
-        <p className="section-sub">
-          Your ERP handles data entry. ERPBridge turns that data into business
-          intelligence.
-        </p>
+        <h2 className="section-title">What Tally Cannot Show,<br />We Do</h2>
+        <p className="section-sub">Your ERP handles data entry. ERPBridge turns that data into business intelligence.</p>
         <div className="features-grid">
           {[
-            {
-              icon: "[+]",
-              title: "Real-time Reports",
-              desc: "Sales, Purchase, P&L, Party Ledger - all live. No manual calculations, no waiting.",
-            },
-            {
-              icon: "[F]",
-              title: "Any ERP, Any File",
-              desc: "Tally, Busy, Marg, Zoho - upload any CSV or Excel file. Ready in 2 minutes.",
-            },
-            {
-              icon: "[^]",
-              title: "Visual Analytics",
-              desc: "Charts and graphs that make trends obvious at a glance. No spreadsheet skills needed.",
-            },
-            {
-              icon: "[S]",
-              title: "Secure and Private",
-              desc: "Your business data stays yours. Encrypted storage, secure login via Google.",
-            },
-            {
-              icon: "[C]",
-              title: "Works Everywhere",
-              desc: "Access your dashboard from any device - laptop, phone, or tablet.",
-            },
-            {
-              icon: "[*]",
-              title: "Instant Setup",
-              desc: "No installation. No IT team needed. Upload a file and you are live.",
-            },
+            { icon: "[+]", title: "Real-time Reports", desc: "Sales, Purchase, P&L, Party Ledger - all live. No manual calculations, no waiting." },
+            { icon: "[F]", title: "Any ERP, Any File", desc: "Tally, Busy, Marg, Zoho - upload any CSV or Excel file. Ready in 2 minutes." },
+            { icon: "[^]", title: "Visual Analytics", desc: "Charts and graphs that make trends obvious at a glance. No spreadsheet skills needed." },
+            { icon: "[S]", title: "Secure and Private", desc: "Your business data stays yours. Encrypted storage, secure login via Google." },
+            { icon: "[C]", title: "Works Everywhere", desc: "Access your dashboard from any device - laptop, phone, or tablet." },
+            { icon: "[*]", title: "Instant Setup", desc: "No installation. No IT team needed. Upload a file and you are live." },
           ].map((f) => (
             <div key={f.title} className="feature">
               <div className="feature-icon">{f.icon}</div>
@@ -191,23 +137,10 @@ export default function HomePage() {
       <div className="section">
         <div className="section-tag">Compatibility</div>
         <h2 className="section-title">Works With Your ERP</h2>
-        <p className="section-sub">
-          Already using an ERP? ERPBridge connects to it without any integration
-          or IT work.
-        </p>
+        <p className="section-sub">Already using an ERP? ERPBridge connects to it without any integration or IT work.</p>
         <div className="erp-row">
-          {[
-            "Tally Prime",
-            "Tally ERP 9",
-            "Busy Accounting",
-            "Marg ERP",
-            "Zoho Books",
-            "Microsoft Excel",
-            "CSV Export",
-          ].map((e) => (
-            <div key={e} className="erp-chip">
-              {e}
-            </div>
+          {["Tally Prime", "Tally ERP 9", "Busy Accounting", "Marg ERP", "Zoho Books", "Microsoft Excel", "CSV Export"].map((e) => (
+            <div key={e} className="erp-chip">{e}</div>
           ))}
         </div>
       </div>
@@ -223,8 +156,7 @@ export default function HomePage() {
             <div className="pricing-period">per year - first time</div>
             <div className="pricing-renewal">Renewal: Rs. 4,999/year</div>
             <div className="compare">
-              Magenta BI charges <strong>Rs. 36,000/year</strong>. We charge{" "}
-              <strong>Rs. 11,999</strong>.
+              Magenta BI charges <strong>Rs. 36,000/year</strong>. We charge <strong>Rs. 11,999</strong>.
             </div>
           </div>
           <div>
@@ -236,11 +168,7 @@ export default function HomePage() {
               <li>Secure Google login</li>
               <li>Access from any device</li>
             </ul>
-            <Link
-              href="/login"
-              className="btn-primary"
-              style={{ marginTop: "28px", display: "inline-block" }}
-            >
+            <Link href="/login" className="btn-primary" style={{ marginTop: "28px", display: "inline-block" }}>
               Start Free Trial
             </Link>
           </div>
@@ -248,13 +176,10 @@ export default function HomePage() {
       </div>
 
       <footer className="footer">
-        <div className="footer-logo">
-          ERP<span>Bridge</span>
-        </div>
-        <div className="footer-text">
-          ERPBridge - Business Intelligence for Indian Businesses
-        </div>
+        <div className="footer-logo">ERP<span>Bridge</span></div>
+        <div className="footer-text">ERPBridge - Business Intelligence for Indian Businesses</div>
       </footer>
+
     </main>
   );
 }
