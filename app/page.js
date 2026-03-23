@@ -121,14 +121,14 @@ export default function HomePage() {
       <div className="divider"></div>
 
       <div className="section">
-        <div className="section-tag">Why ERPBridge</div>
+        <div className="section-tag">Why Nishant ERPBridge</div>
         <h2 className="section-title">
           What Tally Cannot Show,
           <br />
           We Do
         </h2>
         <p className="section-sub">
-          Your ERP handles data entry. ERPBridge turns that data into business
+          Your ERP handles data entry. Nishant ERPBridge turns that data into business
           intelligence.
         </p>
         <div className="features-grid">
@@ -179,7 +179,7 @@ export default function HomePage() {
         <div className="section-tag">Compatibility</div>
         <h2 className="section-title">Works With Your ERP</h2>
         <p className="section-sub">
-          Already using an ERP? ERPBridge connects to it without any integration
+          Already using an ERP? Nishant ERPBridge connects to it without any integration
           or IT work.
         </p>
         <div className="erp-row">
@@ -239,7 +239,7 @@ export default function HomePage() {
           Nishant ERP<span>Bridge</span>
         </div>
         <div className="footer-text">
-          ERPBridge - Business Intelligence for Indian Businesses
+          Nishant ERPBridge - Business Intelligence for Indian Businesses
         </div>
       </footer>
     </main>
