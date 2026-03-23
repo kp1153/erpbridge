@@ -4,15 +4,24 @@ import * as XLSX from "xlsx";
 
 function detectType(row) {
   const vchType = String(
-    row["Vch Type"] || row["vch type"] || row["VCH TYPE"] ||
-    row["Voucher Type"] || row["voucher type"] || ""
-  ).trim().toLowerCase();
+    row["Vch Type"] ||
+      row["vch type"] ||
+      row["VCH TYPE"] ||
+      row["Voucher Type"] ||
+      row["voucher type"] ||
+      "",
+  )
+    .trim()
+    .toLowerCase();
 
   if (vchType.includes("sales")) return "sales";
   if (vchType.includes("purchase")) return "purchase";
-  if (vchType.includes("receipt") || vchType.includes("payment")) return "outstanding";
+  if (vchType.includes("receipt") || vchType.includes("payment"))
+    return "outstanding";
 
-  const manualType = String(row["type"] || row["Type"] || row["TYPE"] || "").trim().toLowerCase();
+  const manualType = String(row["type"] || row["Type"] || row["TYPE"] || "")
+    .trim()
+    .toLowerCase();
 
   if (manualType === "sales") return "sales";
   if (manualType === "purchase") return "purchase";
@@ -25,7 +34,10 @@ function isFmcgFormat(headers) {
   return (
     headers.some((h) => h.toLowerCase().includes("invoice no")) &&
     headers.some((h) => h.toLowerCase() === "asm") &&
-    headers.some((h) => h.toLowerCase().includes("sales officer") || h.toLowerCase() === "so")
+    headers.some(
+      (h) =>
+        h.toLowerCase().includes("sales officer") || h.toLowerCase() === "so",
+    )
   );
 }
 
@@ -33,25 +45,49 @@ async function processFmcg(rows, sql) {
   const headers = Object.keys(rows[0]);
   const productCols = headers.filter((h) => {
     const l = h.toLowerCase();
-    return !["date", "invoice no", "party name", "city", "state", "asm", "sales officer", "so", "invoice total qty", "district"].includes(l);
+    return ![
+      "date",
+      "invoice no",
+      "party name",
+      "city",
+      "state",
+      "asm",
+      "sales officer",
+      "so",
+      "invoice total qty",
+      "district",
+    ].includes(l);
   });
 
   const invoiceValues = [];
   const itemValues = [];
 
   for (const row of rows) {
-    const invoiceNo = String(row["Invoice No"] || row["invoice no"] || "").trim();
+    const invoiceNo = String(
+      row["Invoice No"] || row["invoice no"] || "",
+    ).trim();
     const party = String(row["Party Name"] || row["party name"] || "").trim();
     const city = String(row["City"] || row["city"] || "").trim();
     const state = String(row["State"] || row["state"] || "").trim();
     const asm = String(row["ASM"] || row["asm"] || "").trim();
-    const so = String(row["Sales Officer"] || row["sales officer"] || row["SO"] || row["so"] || "").trim();
-    const totalQty = parseInt(row["Invoice Total Qty"] || row["invoice total qty"] || 0);
+    const so = String(
+      row["Sales Officer"] ||
+        row["sales officer"] ||
+        row["SO"] ||
+        row["so"] ||
+        "",
+    ).trim();
+    const totalQty = parseInt(
+      row["Invoice Total Qty"] || row["invoice total qty"] || 0,
+    );
 
     const rawDate = row["Date"] || row["date"] || "";
     let date = null;
     if (rawDate) {
-      const parsed = new Date(rawDate);
+      const parsed =
+        typeof rawDate === "number"
+          ? new Date(Math.round((rawDate - 25569) * 86400 * 1000))
+          : new Date(rawDate);
       if (!isNaN(parsed.getTime())) date = parsed.toISOString().split("T")[0];
     }
 
@@ -63,7 +99,17 @@ async function processFmcg(rows, sql) {
       if (qty > 0) products.push({ product, qty });
     }
 
-    invoiceValues.push({ invoiceNo, date, party, city, state, asm, so, totalQty, products });
+    invoiceValues.push({
+      invoiceNo,
+      date,
+      party,
+      city,
+      state,
+      asm,
+      so,
+      totalQty,
+      products,
+    });
   }
 
   if (invoiceValues.length === 0) return { inserted: 0, skipped: 0 };
@@ -71,7 +117,7 @@ async function processFmcg(rows, sql) {
   const inserted_invoices = await sql`
     INSERT INTO invoices (invoice_no, date, party, city, state, asm, so, total_qty)
     SELECT * FROM json_to_recordset(${JSON.stringify(
-      invoiceValues.map(v => ({
+      invoiceValues.map((v) => ({
         invoice_no: v.invoiceNo,
         date: v.date,
         party: v.party,
@@ -80,7 +126,7 @@ async function processFmcg(rows, sql) {
         asm: v.asm,
         so: v.so,
         total_qty: v.totalQty,
-      }))
+      })),
     )}::json) AS t(invoice_no text, date date, party text, city text, state text, asm text, so text, total_qty int)
     ON CONFLICT DO NOTHING
     RETURNING id, invoice_no
@@ -117,14 +163,32 @@ async function processTally(rows, sql) {
   for (const row of rows) {
     const type = detectType(row);
     const party = String(
-      row["party"] || row["Party"] || row["PARTY"] ||
-      row["name"] || row["Name"] || row["Particulars"] || row["particulars"] || ""
+      row["party"] ||
+        row["Party"] ||
+        row["PARTY"] ||
+        row["name"] ||
+        row["Name"] ||
+        row["Particulars"] ||
+        row["particulars"] ||
+        "",
     ).trim();
     const amount = parseFloat(
-      row["amount"] || row["Amount"] || row["AMOUNT"] ||
-      row["Debit"] || row["debit"] || row["Credit"] || row["credit"] || 0
+      row["amount"] ||
+        row["Amount"] ||
+        row["AMOUNT"] ||
+        row["Debit"] ||
+        row["debit"] ||
+        row["Credit"] ||
+        row["credit"] ||
+        0,
     );
-    const rawDate = row["date"] || row["Date"] || row["DATE"] || row["Voucher Date"] || row["voucher date"] || "";
+    const rawDate =
+      row["date"] ||
+      row["Date"] ||
+      row["DATE"] ||
+      row["Voucher Date"] ||
+      row["voucher date"] ||
+      "";
 
     let date = null;
     if (rawDate) {
@@ -155,20 +219,29 @@ export async function POST(req) {
     const file = formData.get("file");
 
     if (!file) {
-      return NextResponse.json({ message: "No file uploaded" }, { status: 400 });
+      return NextResponse.json(
+        { message: "No file uploaded" },
+        { status: 400 },
+      );
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
     const workbook = XLSX.read(buffer, { type: "buffer" });
-    const sheetName = workbook.SheetNames.find(
-      (s) => s.toLowerCase().includes("sales") || s.toLowerCase().includes("invoice")
-    ) || workbook.SheetNames[0];
+    const sheetName =
+      workbook.SheetNames.find(
+        (s) =>
+          s.toLowerCase().includes("sales") ||
+          s.toLowerCase().includes("invoice"),
+      ) || workbook.SheetNames[0];
 
     const sheet = workbook.Sheets[sheetName];
     const rows = XLSX.utils.sheet_to_json(sheet, { defval: "" });
 
     if (!rows || rows.length === 0) {
-      return NextResponse.json({ message: "File is empty or unreadable" }, { status: 400 });
+      return NextResponse.json(
+        { message: "File is empty or unreadable" },
+        { status: 400 },
+      );
     }
 
     const sql = neon(process.env.DATABASE_URL);
@@ -187,6 +260,9 @@ export async function POST(req) {
       skipped,
     });
   } catch (error) {
-    return NextResponse.json({ message: "Upload failed: " + error.message }, { status: 500 });
+    return NextResponse.json(
+      { message: "Upload failed: " + error.message },
+      { status: 500 },
+    );
   }
 }
