@@ -13,7 +13,18 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside style={{ width: "240px", background: "#0e0e16", borderRight: "1px solid rgba(255,255,255,0.06)", display: "flex", flexDirection: "column", padding: "32px 20px", gap: "4px", minHeight: "100vh" }}>
+    <aside
+      style={{
+        width: "240px",
+        background: "#0e0e16",
+        borderRight: "1px solid rgba(255,255,255,0.06)",
+        display: "flex",
+        flexDirection: "column",
+        padding: "32px 20px",
+        gap: "4px",
+        minHeight: "100vh",
+      }}
+    >
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap');
         .sidebar-logo { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 900; color: #f0ede8; margin-bottom: 40px; padding: 0 8px; }
@@ -25,7 +36,7 @@ export default function Sidebar() {
         .sidebar-footer { margin-top: auto; padding: 12px; border-top: 1px solid rgba(255,255,255,0.06); font-family: 'DM Sans', sans-serif; font-size: 11px; color: #4a4846; }
       `}</style>
 
-      <div className="sidebar-logo">ERP<span>Bridge</span></div>
+      <div className="sidebar-footer">Nishant ERPBridge v1.0</div>
 
       {links.map((link) => (
         <Link
@@ -38,7 +49,7 @@ export default function Sidebar() {
         </Link>
       ))}
 
-      <div className="sidebar-footer">ERPBridge v1.0</div>
+      <div className="sidebar-footer">Nishant ERPBridge v1.0</div>
     </aside>
   );
 }
