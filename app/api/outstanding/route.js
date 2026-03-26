@@ -10,14 +10,11 @@ export async function GET(request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = JSON.parse(atob(session.value));
     const sql = neon(process.env.DATABASE_URL);
-
     const { searchParams } = new URL(request.url);
-    const from = searchParams.get("from") || null;
-    const to = searchParams.get("to") || null;
+    const from = searchParams.get("from");
+    const to = searchParams.get("to");
 
-    // Party-wise outstanding — sales minus receipts
     let outstanding;
     if (from && to) {
       outstanding = await sql`

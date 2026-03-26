@@ -10,21 +10,18 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = JSON.parse(atob(session.value));
     const sql = neon(process.env.DATABASE_URL);
 
-    // Aging: only sales invoices grouped by how old they are
-    // Parties with partial payment are still included correctly
     const aging = await sql`
       SELECT
         s.party,
-        SUM(CASE WHEN CURRENT_DATE - s.date::date <= 30
+        SUM(CASE WHEN CURRENT_DATE - s.date <= 30
           THEN COALESCE(s.amount, 0) ELSE 0 END) AS days_0_30,
-        SUM(CASE WHEN CURRENT_DATE - s.date::date BETWEEN 31 AND 60
+        SUM(CASE WHEN CURRENT_DATE - s.date BETWEEN 31 AND 60
           THEN COALESCE(s.amount, 0) ELSE 0 END) AS days_31_60,
-        SUM(CASE WHEN CURRENT_DATE - s.date::date BETWEEN 61 AND 90
+        SUM(CASE WHEN CURRENT_DATE - s.date BETWEEN 61 AND 90
           THEN COALESCE(s.amount, 0) ELSE 0 END) AS days_61_90,
-        SUM(CASE WHEN CURRENT_DATE - s.date::date > 90
+        SUM(CASE WHEN CURRENT_DATE - s.date > 90
           THEN COALESCE(s.amount, 0) ELSE 0 END) AS days_90_plus,
         SUM(COALESCE(s.amount, 0)) AS total_sales,
         COALESCE(r.total_received, 0) AS total_received,
