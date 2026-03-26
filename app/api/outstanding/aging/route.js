@@ -30,7 +30,7 @@ export async function GET() {
       LEFT JOIN (
         SELECT party, SUM(COALESCE(amount, 0)) AS total_received
         FROM transactions
-        WHERE type = 'receipt'
+        WHERE type IN ('receipt', 'outstanding')
         GROUP BY party
       ) r ON s.party = r.party
       WHERE s.type = 'sales'

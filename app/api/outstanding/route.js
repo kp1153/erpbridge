@@ -21,9 +21,9 @@ export async function GET(request) {
         SELECT
           party,
           SUM(CASE WHEN type = 'sales' THEN COALESCE(amount, 0) ELSE 0 END) AS total_sales,
-          SUM(CASE WHEN type = 'receipt' THEN COALESCE(amount, 0) ELSE 0 END) AS total_received,
+          SUM(CASE WHEN type IN ('receipt','outstanding') THEN COALESCE(amount, 0) ELSE 0 END) AS total_received,
           SUM(CASE WHEN type = 'sales' THEN COALESCE(amount, 0) ELSE 0 END) -
-          SUM(CASE WHEN type = 'receipt' THEN COALESCE(amount, 0) ELSE 0 END) AS balance,
+          SUM(CASE WHEN type IN ('receipt','outstanding') THEN COALESCE(amount, 0) ELSE 0 END) AS balance,
           MAX(date) AS last_transaction,
           COUNT(CASE WHEN type = 'sales' THEN 1 END) AS invoice_count
         FROM transactions
@@ -31,7 +31,7 @@ export async function GET(request) {
         GROUP BY party
         HAVING (
           SUM(CASE WHEN type = 'sales' THEN COALESCE(amount, 0) ELSE 0 END) -
-          SUM(CASE WHEN type = 'receipt' THEN COALESCE(amount, 0) ELSE 0 END)
+          SUM(CASE WHEN type IN ('receipt','outstanding') THEN COALESCE(amount, 0) ELSE 0 END)
         ) > 0
         ORDER BY balance DESC
       `;
@@ -40,16 +40,16 @@ export async function GET(request) {
         SELECT
           party,
           SUM(CASE WHEN type = 'sales' THEN COALESCE(amount, 0) ELSE 0 END) AS total_sales,
-          SUM(CASE WHEN type = 'receipt' THEN COALESCE(amount, 0) ELSE 0 END) AS total_received,
+          SUM(CASE WHEN type IN ('receipt','outstanding') THEN COALESCE(amount, 0) ELSE 0 END) AS total_received,
           SUM(CASE WHEN type = 'sales' THEN COALESCE(amount, 0) ELSE 0 END) -
-          SUM(CASE WHEN type = 'receipt' THEN COALESCE(amount, 0) ELSE 0 END) AS balance,
+          SUM(CASE WHEN type IN ('receipt','outstanding') THEN COALESCE(amount, 0) ELSE 0 END) AS balance,
           MAX(date) AS last_transaction,
           COUNT(CASE WHEN type = 'sales' THEN 1 END) AS invoice_count
         FROM transactions
         GROUP BY party
         HAVING (
           SUM(CASE WHEN type = 'sales' THEN COALESCE(amount, 0) ELSE 0 END) -
-          SUM(CASE WHEN type = 'receipt' THEN COALESCE(amount, 0) ELSE 0 END)
+          SUM(CASE WHEN type IN ('receipt','outstanding') THEN COALESCE(amount, 0) ELSE 0 END)
         ) > 0
         ORDER BY balance DESC
       `;
@@ -59,16 +59,13 @@ export async function GET(request) {
       SELECT
         COUNT(DISTINCT party) AS total_parties,
         SUM(CASE WHEN type = 'sales' THEN COALESCE(amount, 0) ELSE 0 END) AS total_sales,
-        SUM(CASE WHEN type = 'receipt' THEN COALESCE(amount, 0) ELSE 0 END) AS total_received,
+        SUM(CASE WHEN type IN ('receipt','outstanding') THEN COALESCE(amount, 0) ELSE 0 END) AS total_received,
         SUM(CASE WHEN type = 'sales' THEN COALESCE(amount, 0) ELSE 0 END) -
-        SUM(CASE WHEN type = 'receipt' THEN COALESCE(amount, 0) ELSE 0 END) AS total_outstanding
+        SUM(CASE WHEN type IN ('receipt','outstanding') THEN COALESCE(amount, 0) ELSE 0 END) AS total_outstanding
       FROM transactions
     `;
 
-    return NextResponse.json({
-      outstanding,
-      summary: summary[0] || null,
-    });
+    return NextResponse.json({ outstanding, summary: summary[0] || null });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

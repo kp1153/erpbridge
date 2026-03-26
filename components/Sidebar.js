@@ -3,28 +3,26 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const links = [
-  { href: "/dashboard", label: "Dashboard", icon: "[D]" },
-  { href: "/dashboard/upload", label: "Upload", icon: "[U]" },
-  { href: "/dashboard/reports", label: "Reports", icon: "[R]" },
-  { href: "/dashboard/settings", label: "Settings", icon: "[S]" },
+  { href: "/dashboard",           label: "Dashboard",  icon: "[D]" },
+  { href: "/dashboard/upload",    label: "Upload",     icon: "[U]" },
+  { href: "/dashboard/reports",   label: "Reports",    icon: "[R]" },
+  { href: "/dashboard/outstanding", label: "Outstanding", icon: "[₹]" },
+  { href: "/dashboard/inventory", label: "Inventory",  icon: "[I]" },
+  { href: "/dashboard/purchase",  label: "Purchase",   icon: "[P]" },
+  { href: "/dashboard/team",      label: "Team",       icon: "[T]" },
+  { href: "/dashboard/settings",  label: "Settings",   icon: "[S]" },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside
-      style={{
-        width: "240px",
-        background: "#0e0e16",
-        borderRight: "1px solid rgba(255,255,255,0.06)",
-        display: "flex",
-        flexDirection: "column",
-        padding: "32px 20px",
-        gap: "4px",
-        minHeight: "100vh",
-      }}
-    >
+    <aside style={{
+      width: "240px", background: "#0e0e16",
+      borderRight: "1px solid rgba(255,255,255,0.06)",
+      display: "flex", flexDirection: "column",
+      padding: "32px 20px", gap: "4px", minHeight: "100vh",
+    }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap');
         .sidebar-logo { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 900; color: #f0ede8; margin-bottom: 40px; padding: 0 8px; }
@@ -36,14 +34,11 @@ export default function Sidebar() {
         .sidebar-footer { margin-top: auto; padding: 12px; border-top: 1px solid rgba(255,255,255,0.06); font-family: 'DM Sans', sans-serif; font-size: 11px; color: #4a4846; }
       `}</style>
 
-      <div className="sidebar-footer">Nishant ERPBridge v1.0</div>
+      <div className="sidebar-logo">Nishant <span>ERP</span></div>
 
       {links.map((link) => (
-        <Link
-          key={link.href}
-          href={link.href}
-          className={`nav-link ${pathname === link.href ? "active" : ""}`}
-        >
+        <Link key={link.href} href={link.href}
+          className={`nav-link ${pathname === link.href ? "active" : ""}`}>
           <span className="nav-icon">{link.icon}</span>
           {link.label}
         </Link>
