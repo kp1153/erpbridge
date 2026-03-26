@@ -3,14 +3,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const links = [
-  { href: "/dashboard",           label: "Dashboard",  icon: "[D]" },
-  { href: "/dashboard/upload",    label: "Upload",     icon: "[U]" },
-  { href: "/dashboard/reports",   label: "Reports",    icon: "[R]" },
-  { href: "/dashboard/outstanding", label: "Outstanding", icon: "[₹]" },
-  { href: "/dashboard/inventory", label: "Inventory",  icon: "[I]" },
-  { href: "/dashboard/purchase",  label: "Purchase",   icon: "[P]" },
-  { href: "/dashboard/team",      label: "Team",       icon: "[T]" },
-  { href: "/dashboard/settings",  label: "Settings",   icon: "[S]" },
+  { href: "/dashboard",             label: "Dashboard",    icon: "[D]" },
+  { href: "/dashboard/upload",      label: "Upload",       icon: "[U]" },
+  { href: "/dashboard/reports",     label: "Reports",      icon: "[R]" },
+  { href: "/dashboard/outstanding", label: "Outstanding",  icon: "[₹]" },
+  { href: "/dashboard/inventory",   label: "Inventory",    icon: "[I]" },
+  { href: "/dashboard/purchase",    label: "Purchase",     icon: "[P]" },
+  { href: "/dashboard/targets",     label: "SO Targets",   icon: "[T]" },
+  { href: "/dashboard/team",        label: "Team",         icon: "[👥]" },
+  { href: "/dashboard/settings",    label: "Settings",     icon: "[S]" },
 ];
 
 export default function Sidebar() {
