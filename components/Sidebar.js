@@ -12,6 +12,7 @@ const links = [
   { href: "/dashboard/targets",     label: "SO Targets",   icon: "[T]" },
   { href: "/dashboard/team",        label: "Team",         icon: "[👥]" },
   { href: "/dashboard/settings",    label: "Settings",     icon: "[S]" },
+  { href: "/dashboard/help",        label: "Help / Setup",  icon: "[?]" },
 ];
 
 export default function Sidebar() {
