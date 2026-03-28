@@ -41,11 +41,13 @@ export async function POST(req) {
       return NextResponse.json({ message: "Invalid token" }, { status: 401 });
     }
 
+    const email = tokenResult[0].email;
+
     const validRows = [];
     for (const row of transactions) {
       const { type, party, amount, date } = row;
       if (!type || !amount || !date) continue;
-      validRows.push({ type, party: party || "", amount: parseFloat(amount), date });
+      validRows.push({ email, type, party: party || "", amount: parseFloat(amount), date });
     }
 
     if (validRows.length === 0) {
@@ -53,9 +55,9 @@ export async function POST(req) {
     }
 
     const result = await sql`
-      INSERT INTO transactions (type, party, amount, date)
+      INSERT INTO transactions (email, type, party, amount, date)
       SELECT * FROM json_to_recordset(${JSON.stringify(validRows)}::json)
-      AS t(type text, party text, amount numeric, date date)
+      AS t(email text, type text, party text, amount numeric, date date)
       ON CONFLICT DO NOTHING
       RETURNING id
     `;
