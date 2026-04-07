@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
 import { Resend } from "resend";
 
+const DEVELOPER_EMAIL = "prasad.kamta@gmail.com";
+
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get("code");
@@ -33,6 +35,19 @@ export async function GET(request) {
   });
 
   const user = await userRes.json();
+
+  const payload = btoa(JSON.stringify({ email: user.email, name: user.name, picture: user.picture }));
+  const response = NextResponse.redirect(process.env.NEXT_PUBLIC_URL + "/dashboard");
+  response.cookies.set("session", payload, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 60 * 60 * 24 * 7,
+    path: "/",
+  });
+
+  if (user.email === DEVELOPER_EMAIL) {
+    return response;
+  }
 
   const sql = neon(process.env.DATABASE_URL);
 
@@ -71,16 +86,6 @@ export async function GET(request) {
       console.error("Resend error:", e);
     }
   }
-
-  const payload = btoa(JSON.stringify({ email: user.email, name: user.name, picture: user.picture }));
-
-  const response = NextResponse.redirect(process.env.NEXT_PUBLIC_URL + "/dashboard");
-  response.cookies.set("session", payload, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    maxAge: 60 * 60 * 24 * 7,
-    path: "/",
-  });
 
   return response;
 }

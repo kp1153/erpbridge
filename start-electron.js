@@ -1,31 +1,7 @@
-const { spawn } = require("child_process");
 const { app, BrowserWindow } = require("electron");
 const path = require("path");
-const http = require("http");
 
 let mainWindow;
-let nextProcess;
-
-function waitForNext(url, retries, callback) {
-  http.get(url, (res) => {
-    if (res.statusCode === 200) {
-      callback();
-    } else {
-      retry();
-    }
-  }).on("error", () => {
-    retry();
-  });
-
-  function retry() {
-    if (retries <= 0) {
-      console.error("Next.js did not start in time");
-      app.quit();
-      return;
-    }
-    setTimeout(() => waitForNext(url, retries - 1, callback), 1000);
-  }
-}
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -38,25 +14,15 @@ function createWindow() {
     },
   });
 
-  mainWindow.loadURL("http://localhost:3000");
+  mainWindow.loadURL("https://erpbridge.vercel.app");
   mainWindow.on("closed", () => { mainWindow = null; });
 }
 
 app.on("ready", () => {
-  nextProcess = spawn("node", ["node_modules/.bin/next", "start"], {
-    cwd: __dirname,
-    shell: true,
-    stdio: "inherit",
-    env: { ...process.env, PORT: "3000" },
-  });
-
-  waitForNext("http://localhost:3000", 30, () => {
-    createWindow();
-  });
+  createWindow();
 });
 
 app.on("window-all-closed", () => {
-  if (nextProcess) nextProcess.kill();
   if (process.platform !== "darwin") app.quit();
 });
 
