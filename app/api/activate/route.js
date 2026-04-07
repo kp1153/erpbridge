@@ -3,11 +3,12 @@ import { neon } from "@neondatabase/serverless";
 
 export async function POST(req) {
   try {
-    const { email, name, phone, plan, secret } = await req.json();
-
-    if (secret !== process.env.HUB_SECRET) {
+    const authHeader = req.headers.get("authorization");
+    if (authHeader !== `Bearer ${process.env.HUB_SECRET}`) {
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
     }
+
+    const { email, name, phone, plan } = await req.json();
 
     const sql = neon(process.env.DATABASE_URL);
 

@@ -73,18 +73,26 @@ export async function GET(request) {
     );
   }
 
-  if (dbUser.status === "active" && daysLeft <= 7) {
-    try {
-      const resend = new Resend(process.env.RESEND_API_KEY);
+  try {
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    if (dbUser.status === "active" && daysLeft <= 7) {
       await resend.emails.send({
         from: "ERPBridge <no-reply@web-developer-kp.com>",
         to: user.email,
         subject: "ERPBridge — Renewal Reminder",
         html: `<p>Dear ${user.name},</p><p>Your ERPBridge subscription expires in <strong>${daysLeft} day(s)</strong>.</p><p>Renew now at just ₹4,999/year: <a href="https://web-developer-kp.com/payment?software=erpbridge&email=${encodeURIComponent(user.email)}">Click here to renew</a></p><p>Team ERPBridge</p>`,
       });
-    } catch (e) {
-      console.error("Resend error:", e);
     }
+    if (dbUser.status === "trial" && daysLeft <= 1) {
+      await resend.emails.send({
+        from: "ERPBridge <no-reply@web-developer-kp.com>",
+        to: user.email,
+        subject: "ERPBridge — Trial समाप्त होने वाला है",
+        html: `<p>Dear ${user.name},</p><p>आपका ERPBridge free trial <strong>कल समाप्त</strong> हो जाएगा।</p><p>अभी खरीदें — ₹11,999 (1 साल included): <a href="https://web-developer-kp.com/payment?software=erpbridge&email=${encodeURIComponent(user.email)}">यहाँ click करें</a></p><p>Team ERPBridge</p>`,
+      });
+    }
+  } catch (e) {
+    console.error("Resend error:", e);
   }
 
   return response;
