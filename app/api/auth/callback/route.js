@@ -19,7 +19,7 @@ export async function GET(request) {
       code,
       client_id: process.env.GOOGLE_CLIENT_ID,
       client_secret: process.env.GOOGLE_CLIENT_SECRET,
-      redirect_uri: process.env.NEXT_PUBLIC_URL + "/api/auth/callback/google",
+      redirect_uri: process.env.NEXT_PUBLIC_URL + "/api/auth/callback",
       grant_type: "authorization_code",
     }),
   });
@@ -80,7 +80,7 @@ export async function GET(request) {
         from: "ERPBridge <no-reply@web-developer-kp.com>",
         to: user.email,
         subject: "ERPBridge — Renewal Reminder",
-        html: `<p>Dear ${user.name},</p><p>Your ERPBridge subscription expires in <strong>${daysLeft} day(s)</strong>.</p><p>Renew now at just ₹4,999/year: <a href="https://web-developer-kp.com/payment?software=erpbridge&email=${encodeURIComponent(user.email)}">Click here to renew</a></p><p>Team ERPBridge</p>`,
+        html: `<p>Dear ${user.name},</p><p>Your ERPBridge subscription expires in <strong>${daysLeft} day(s)</strong>.</p><p>Renew now at just ₹2,500/year: <a href="https://web-developer-kp.com/payment?software=erpbridge&email=${encodeURIComponent(user.email)}">Click here to renew</a></p><p>Team ERPBridge</p>`,
       });
     }
     if (dbUser.status === "trial" && daysLeft <= 1) {
@@ -88,7 +88,7 @@ export async function GET(request) {
         from: "ERPBridge <no-reply@web-developer-kp.com>",
         to: user.email,
         subject: "ERPBridge — Trial समाप्त होने वाला है",
-        html: `<p>Dear ${user.name},</p><p>आपका ERPBridge free trial <strong>कल समाप्त</strong> हो जाएगा।</p><p>अभी खरीदें — ₹11,999 (1 साल included): <a href="https://web-developer-kp.com/payment?software=erpbridge&email=${encodeURIComponent(user.email)}">यहाँ click करें</a></p><p>Team ERPBridge</p>`,
+        html: `<p>Dear ${user.name},</p><p>आपका ERPBridge free trial <strong>कल समाप्त</strong> हो जाएगा।</p><p>अभी खरीदें — ₹4,999 (पहला साल): <a href="https://web-developer-kp.com/payment?software=erpbridge&email=${encodeURIComponent(user.email)}">यहाँ click करें</a></p><p>Team ERPBridge</p>`,
       });
     }
   } catch (e) {
