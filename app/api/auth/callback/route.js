@@ -3,13 +3,16 @@ import { neon } from "@neondatabase/serverless";
 import { Resend } from "resend";
 
 const DEVELOPER_EMAIL = "prasad.kamta@gmail.com";
+const BASE_URL = (
+  process.env.NEXT_PUBLIC_URL || "https://erp.nishantsoftwares.in"
+).replace(/\/$/, "");
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get("code");
 
   if (!code) {
-    return NextResponse.redirect(process.env.NEXT_PUBLIC_URL + "/login?error=no_code");
+    return NextResponse.redirect(BASE_URL + "/login?error=no_code");
   }
 
   const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
@@ -19,7 +22,7 @@ export async function GET(request) {
       code,
       client_id: process.env.GOOGLE_CLIENT_ID,
       client_secret: process.env.GOOGLE_CLIENT_SECRET,
-      redirect_uri: process.env.NEXT_PUBLIC_URL + "/api/auth/callback",
+      redirect_uri: BASE_URL + "/api/auth/callback",
       grant_type: "authorization_code",
     }),
   });
@@ -27,7 +30,7 @@ export async function GET(request) {
   const tokenData = await tokenRes.json();
 
   if (!tokenData.access_token) {
-    return NextResponse.redirect(process.env.NEXT_PUBLIC_URL + "/login?error=no_token");
+    return NextResponse.redirect(BASE_URL + "/login?error=no_token");
   }
 
   const userRes = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
@@ -36,8 +39,14 @@ export async function GET(request) {
 
   const user = await userRes.json();
 
-  const payload = btoa(JSON.stringify({ email: user.email, name: user.name, picture: user.picture }));
-  const response = NextResponse.redirect(process.env.NEXT_PUBLIC_URL + "/dashboard");
+  const payload = btoa(
+    JSON.stringify({
+      email: user.email,
+      name: user.name,
+      picture: user.picture,
+    }),
+  );
+  const response = NextResponse.redirect(BASE_URL + "/dashboard");
   response.cookies.set("session", payload, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -60,7 +69,10 @@ export async function GET(request) {
     `;
   }
 
-  const dbUser = existing.length > 0 ? existing[0] : (await sql`SELECT * FROM users WHERE email = ${user.email}`)[0];
+  const dbUser =
+    existing.length > 0
+      ? existing[0]
+      : (await sql`SELECT * FROM users WHERE email = ${user.email}`)[0];
 
   const now = new Date();
   const expiry = new Date(dbUser.expiry_date);
@@ -69,7 +81,8 @@ export async function GET(request) {
   if (now > expiry) {
     await sql`UPDATE users SET status = 'expired' WHERE email = ${user.email}`;
     return NextResponse.redirect(
-      "https://web-developer-kp.com/payment?software=erpbridge&email=" + encodeURIComponent(user.email)
+      "https://web-developer-kp.com/payment?software=erpbridge&email=" +
+        encodeURIComponent(user.email),
     );
   }
 

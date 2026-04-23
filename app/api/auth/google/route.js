@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server";
 
+const BASE_URL = process.env.NEXT_PUBLIC_URL || "https://erp.nishantsoftwares.in";
+
 export async function GET() {
+  const redirectUri = `${BASE_URL.replace(/\/$/, "")}/api/auth/callback`;
+
   const params = new URLSearchParams({
     client_id: process.env.GOOGLE_CLIENT_ID,
-    redirect_uri: process.env.NEXT_PUBLIC_URL + "/api/auth/callback",
+    redirect_uri: redirectUri,
     response_type: "code",
     scope: "openid email profile",
     access_type: "offline",
