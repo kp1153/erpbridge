@@ -8,24 +8,25 @@ export async function POST(req) {
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
     }
 
-    const { email, name, phone, plan } = await req.json();
+    const { email, name } = await req.json();
+
+    if (!email) {
+      return NextResponse.json({ success: false, message: "Email required" }, { status: 400 });
+    }
 
     const sql = neon(process.env.DATABASE_URL);
-
-    const expiryDate = new Date();
-    expiryDate.setFullYear(expiryDate.getFullYear() + 1);
 
     const existing = await sql`SELECT * FROM users WHERE email = ${email}`;
 
     if (existing.length > 0) {
       await sql`
-        UPDATE users SET status = 'active', expiry_date = ${expiryDate.toISOString()}, name = ${name}
+        UPDATE users SET active = 1, name = ${name}
         WHERE email = ${email}
       `;
     } else {
       await sql`
-        INSERT INTO users (email, name, status, expiry_date)
-        VALUES (${email}, ${name}, 'active', ${expiryDate.toISOString()})
+        INSERT INTO users (email, name, active, created_at)
+        VALUES (${email}, ${name}, 1, NOW())
       `;
     }
 

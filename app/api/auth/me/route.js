@@ -16,26 +16,23 @@ export async function GET() {
     const user = JSON.parse(atob(session.value));
 
     if (user.email === DEVELOPER_EMAIL) {
-      return NextResponse.json({ user, status: "active", daysLeft: 999 });
+      return NextResponse.json({ user, active: 1, daysLeft: 999 });
     }
 
     const sql = neon(process.env.DATABASE_URL);
-    const rows = await sql`SELECT status, expiry_date FROM users WHERE email = ${user.email}`;
+    const rows = await sql`SELECT active, created_at FROM users WHERE email = ${user.email}`;
 
     if (rows.length === 0) {
-      return NextResponse.json({ user, status: "expired", daysLeft: 0 });
+      return NextResponse.json({ user, active: 0, daysLeft: 0 });
     }
 
     const dbUser = rows[0];
     const now = new Date();
-    const expiry = new Date(dbUser.expiry_date);
-    const daysLeft = Math.ceil((expiry - now) / (1000 * 60 * 60 * 24));
+    const createdAt = new Date(dbUser.created_at);
+    const daysSince = Math.ceil((now - createdAt) / (1000 * 60 * 60 * 24));
+    const daysLeft = Math.max(0, 7 - daysSince);
 
-    if (now > expiry) {
-      return NextResponse.json({ user, status: "expired", daysLeft: 0 });
-    }
-
-    return NextResponse.json({ user, status: dbUser.status, daysLeft: Math.max(0, daysLeft) });
+    return NextResponse.json({ user, active: dbUser.active, daysLeft });
   } catch {
     return NextResponse.json({ user: null }, { status: 401 });
   }
