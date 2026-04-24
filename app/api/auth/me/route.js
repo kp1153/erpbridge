@@ -13,9 +13,10 @@ export async function GET() {
   }
 
   try {
-    const user = JSON.parse(atob(session.value));
+    const user = JSON.parse(
+      Buffer.from(session.value, "base64").toString("utf-8")
+    );
 
-    // Developer whitelist
     if (user.email === DEVELOPER_EMAIL) {
       return NextResponse.json({
         user,
