@@ -15,24 +15,48 @@ export async function GET() {
   try {
     const user = JSON.parse(atob(session.value));
 
+    // Developer whitelist
     if (user.email === DEVELOPER_EMAIL) {
-      return NextResponse.json({ user, active: 1, daysLeft: 999 });
+      return NextResponse.json({
+        user,
+        active: 1,
+        status: "active",
+        daysLeft: 999,
+      });
     }
 
     const sql = neon(process.env.DATABASE_URL);
-    const rows = await sql`SELECT active, created_at FROM users WHERE email = ${user.email}`;
+    const rows = await sql`
+      SELECT active, status, expiry_date
+      FROM users
+      WHERE email = ${user.email}
+    `;
 
     if (rows.length === 0) {
-      return NextResponse.json({ user, active: 0, daysLeft: 0 });
+      return NextResponse.json({
+        user,
+        active: 0,
+        status: "expired",
+        daysLeft: 0,
+      });
     }
 
     const dbUser = rows[0];
     const now = new Date();
-    const createdAt = new Date(dbUser.created_at);
-    const daysSince = Math.ceil((now - createdAt) / (1000 * 60 * 60 * 24));
-    const daysLeft = Math.max(0, 7 - daysSince);
+    const expiry = dbUser.expiry_date ? new Date(dbUser.expiry_date) : null;
 
-    return NextResponse.json({ user, active: dbUser.active, daysLeft });
+    let daysLeft = 0;
+    if (expiry) {
+      const diffMs = expiry - now;
+      daysLeft = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+    }
+
+    return NextResponse.json({
+      user,
+      active: dbUser.active,
+      status: dbUser.status,
+      daysLeft,
+    });
   } catch {
     return NextResponse.json({ user: null }, { status: 401 });
   }
