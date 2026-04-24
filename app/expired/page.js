@@ -13,7 +13,7 @@ export default function ExpiredPage() {
       .catch(() => {});
   }, []);
 
-  const paymentUrl = `https://nishantsoftwares.in?software=erpbridge${email ? "&email=" + encodeURIComponent(email) : ""}`;
+  const paymentUrl = `https://nishantsoftwares.in/payment?software=erpbridge${email ? "&email=" + encodeURIComponent(email) : ""}`;
 
   return (
     <main
